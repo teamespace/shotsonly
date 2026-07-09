@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  --color-voltra-bg: #0C0C0E;
+  --color-voltra-bg-2: #121215;
+  --color-voltra-panel: #17171B;
+  --color-voltra-panel-2: #1D1D22;
+  --color-voltra-line: rgba(245, 245, 242, 0.10);
+  --color-voltra-line-strong: rgba(245, 245, 242, 0.18);
+  --color-voltra-lime: #C8F135;
+  --color-voltra-lime-dim: rgba(200, 241, 53, 0.14);
+  --color-voltra-white: #F5F5F2;
+  --color-voltra-muted: rgba(245, 245, 242, 0.62);
+  --color-voltra-faint: rgba(245, 245, 242, 0.38);
+
+  --font-display: 'Archivo Black', sans-serif;
+  --font-body: 'Archivo', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-voltra-bg text-voltra-white font-body text-[17px] leading-[1.6] antialiased overflow-x-hidden;
+  }
+  ::selection {
+    @apply bg-voltra-lime text-voltra-bg;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  a {
+    color: inherit;
+  }
+}
+
+@layer utilities {
+  .clip-btn-lime {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+  }
+  .clip-btn-ink {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+  }
+  .clip-cta {
+    clip-path: polygon(0 clamp(1.5rem, 4vw, 3rem), 100% 0, 100% calc(100% - clamp(1.5rem, 4vw, 3rem)), 0 100%);
+  }
+  .kicker-line::before {
+    content: "";
+    display: inline-block;
+    width: 2rem;
+    height: 2px;
+    background: var(--color-voltra-lime);
+    transform: skewX(-30deg);
+  }
+  .kicker-line-dark::before {
+    content: "";
+    display: inline-block;
+    width: 2rem;
+    height: 2px;
+    background: #0C0C0E;
+    transform: skewX(-30deg);
+  }
+}
