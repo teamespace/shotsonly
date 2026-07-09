@@ -527,7 +527,7 @@ img{max-width:100%}
 }
 /* art c: duration dial */
 .dial{
-  width:200px;height:200px;border-radius:50%;
+  width:240px;height:240px;border-radius:50%;
   border:1.5px solid rgba(255,255,255,.25);
   display:grid;place-items:center;position:relative;
 }
@@ -536,14 +536,24 @@ img{max-width:100%}
   border:1.5px dashed rgba(255,255,255,.5);
   animation:spin 40s linear infinite;
 }
-@keyframes spin{to{rotate:360deg}}
-.dial-core{
-  text-align:center;font-family:var(--serif);color:#fff;
+@keyframes orbit-c1 {
+  from { transform: rotate(0deg) translateY(-120px) rotate(0deg) translate(-50%, -50%); }
+  to { transform: rotate(360deg) translateY(-120px) rotate(-360deg) translate(-50%, -50%); }
 }
-.dial-core strong{font-size:2.6rem;font-weight:400;display:block;line-height:1}
-.dial-core span{font-size:.75rem;font-family:var(--sans);letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.8);font-weight:600}
+@keyframes orbit-c2 {
+  from { transform: rotate(120deg) translateY(-120px) rotate(-120deg) translate(-50%, -50%); }
+  to { transform: rotate(480deg) translateY(-120px) rotate(-480deg) translate(-50%, -50%); }
+}
+@keyframes orbit-c3 {
+  from { transform: rotate(240deg) translateY(-120px) rotate(-240deg) translate(-50%, -50%); }
+  to { transform: rotate(600deg) translateY(-120px) rotate(-600deg) translate(-50%, -50%); }
+}
+
 .dial-chip{
   position:absolute;
+  top: 50%; left: 50%;
+  white-space: nowrap;
+  will-change: transform;
   background:rgba(255,255,255,.15);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
@@ -551,19 +561,41 @@ img{max-width:100%}
   border-radius:99px;padding:.3rem .85rem;font-size:.75rem;font-weight:500;color:#fff;
   box-shadow:0 10px 22px -12px rgba(0,0,0,.2);
 }
-.dial-chip.c1{top:14%;left:4%}
-.dial-chip.c2{bottom:20%;right:2%}
-.dial-chip.c3{top:58%;left:-2%}
+.dial-chip.c1 { animation: orbit-c1 60s linear infinite; }
+.dial-chip.c2 { animation: orbit-c2 60s linear infinite; }
+.dial-chip.c3 { animation: orbit-c3 60s linear infinite; }
+
+.dial-core{
+  text-align:center;font-family:var(--serif);color:#fff;
+}
+.dial-core strong{font-size:3rem;font-weight:400;display:block;line-height:1}
+.dial-core span{font-size:.75rem;font-family:var(--sans);letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.8);font-weight:600}
 /* art d: moon sleep card */
 .sleep-scene{position:relative;width:min(300px,80%);text-align:center}
 .moon{
   width:88px;height:88px;border-radius:50%;
   background:radial-gradient(circle at 62% 34%, #FBEFE2, #E7C6AC 70%);
-  box-shadow:0 0 60px rgba(228,180,158,.9);
   margin:0 auto 1.4rem;
-  animation:drift 7s ease-in-out infinite;
+  animation:drift 6s ease-in-out infinite;
+  will-change: transform, box-shadow;
 }
-@keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes drift {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 
+      0 0 20px rgba(251, 239, 226, 0.6),
+      0 0 60px rgba(231, 198, 172, 0.4), 
+      0 0 100px rgba(228, 180, 158, 0.2);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+    box-shadow: 
+      0 0 30px rgba(255, 245, 235, 0.9),
+      0 0 80px rgba(231, 198, 172, 0.7), 
+      0 0 150px rgba(228, 180, 158, 0.5),
+      0 0 220px rgba(228, 180, 158, 0.3);
+  }
+}
 .sleep-scene h4{font-family:var(--serif);font-weight:400;font-size:1.35rem;color:#fff}
 .sleep-scene p{font-size:.85rem;color:rgba(255,255,255,.7);font-weight:300;margin-top:.4rem}
 
@@ -958,12 +990,8 @@ img{max-width:100%}
 /* ================= SCROLL REVEALS ================= */
 [data-reveal]{
   opacity:0;
-  transform:translateY(50px) scale(0.95);
-  transition:opacity 1.2s cubic-bezier(.22, 1, .36, 1), transform 1.2s cubic-bezier(.22, 1, .36, 1);
-  transition-delay:calc(var(--d,0)*.12s);
   will-change: opacity, transform;
 }
-[data-reveal].in{opacity:1;transform:translateY(0) scale(1)}
 
 /* ================= PHILOSOPHY ================= */
 .philosophy { padding: 7rem 0; }

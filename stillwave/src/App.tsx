@@ -4,22 +4,97 @@
  */
 
 import React, { useEffect, useState, useRef } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'motion/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(ScrollTrigger);
 
+function TiltCard({ children, className, 'aria-hidden': ariaHidden, 'aria-label': ariaLabel }: any) {
+  const ref = useRef<HTMLElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 20 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [10, -10]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [-10, 10]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    x.set(mouseX / width - 0.5);
+    y.set(mouseY / height - 0.5);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.figure
+      ref={ref as any}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX,
+        rotateY,
+        transformPerspective: 1000,
+      }}
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className={className}
+      aria-hidden={ariaHidden}
+      aria-label={ariaLabel}
+    >
+      {children}
+    </motion.figure>
+  );
+}
+
 function ScrollQuote() {
   const container = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: container,
-    offset: ["start 50%", "end 80%"]
-  });
 
   const quote = "“The first meditation app that doesn't feel like a library. It feels like someone wrote tonight's session while thinking of you — because, in a sense, something did.”";
   const words = quote.split(' ');
+
+  useGSAP(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container.current,
+        start: "top 50%",
+        end: "bottom 80%",
+        scrub: true,
+      }
+    });
+
+    // Reveal text word by word
+    tl.to('.quote-word', {
+      opacity: 1,
+      stagger: 0.1,
+      ease: "none",
+      duration: 0.1
+    });
+
+    // Then fade and slide up the elements below
+    tl.fromTo('.reveal-after', {
+      y: 20,
+      opacity: 0
+    }, {
+      y: 0,
+      opacity: 1,
+      stagger: 0.15,
+      ease: "power2.out",
+      duration: 1.5
+    }, "+=0.5");
+  }, { scope: container });
 
   return (
     <div ref={container} style={{ height: '300vh', position: 'relative', marginTop: '-5.5rem', marginBottom: '-4.5rem' }}>
@@ -27,26 +102,21 @@ function ScrollQuote() {
         <div className="wrap">
           <div className="proof-quote" style={{ margin: '0 auto 3.2rem' }}>
             <blockquote className="reveal-text">
-              {words.map((word, i) => {
-                const start = i / words.length * 0.9;
-                const end = start + (1 / words.length);
-                const opacity = useTransform(scrollYProgress, [start, end], [0.2, 1]);
-                return (
-                  <span key={i}>
-                    <motion.span style={{ opacity }}>{word}</motion.span>
-                    {" "}
-                  </span>
-                );
-              })}
+              {words.map((word, i) => (
+                <span key={i}>
+                  <span className="quote-word" style={{ opacity: 0.2 }}>{word}</span>
+                  {" "}
+                </span>
+              ))}
             </blockquote>
-            <cite>Mindful Living — App of the Year shortlist</cite>
+            <cite className="reveal-after" style={{ opacity: 0, display: 'block' }}>Mindful Living — App of the Year shortlist</cite>
           </div>
           <div className="proof-logos" aria-label="Featured in">
-            <span>The Slow Review</span>
-            <span>Wellbeing Weekly</span>
-            <span>Praxis Journal</span>
-            <span>Kindred</span>
-            <span>4.9 ★ · 31,000 ratings</span>
+            <span className="reveal-after" style={{ opacity: 0, display: 'inline-block' }}>The Slow Review</span>
+            <span className="reveal-after" style={{ opacity: 0, display: 'inline-block' }}>Wellbeing Weekly</span>
+            <span className="reveal-after" style={{ opacity: 0, display: 'inline-block' }}>Praxis Journal</span>
+            <span className="reveal-after" style={{ opacity: 0, display: 'inline-block' }}>Kindred</span>
+            <span className="reveal-after" style={{ opacity: 0, display: 'inline-block' }}>4.9 ★ · 31,000 ratings</span>
           </div>
         </div>
       </div>
@@ -496,30 +566,30 @@ export default function App() {
     }
   }, []);
 
-  useEffect(() => {
+  useGSAP(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const targets = document.querySelectorAll('[data-reveal]');
-    
-    if (reduced || !('IntersectionObserver' in window)) {
-      targets.forEach((el) => el.classList.add('in'));
+    if (reduced) {
+      gsap.set('[data-reveal]', { opacity: 1, y: 0, scale: 1 });
       return;
     }
     
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add('in');
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
-    
-    targets.forEach((el) => io.observe(el));
+    gsap.set('[data-reveal]', { opacity: 0, y: 50, scale: 0.95 });
 
-    return () => {
-      targets.forEach((el) => io.unobserve(el));
-      io.disconnect();
-    };
+    ScrollTrigger.batch('[data-reveal]', {
+      onEnter: (batch) => {
+        gsap.to(batch, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          stagger: 0.15,
+          duration: 1.2,
+          ease: 'power4.out',
+          overwrite: true
+        });
+      },
+      start: 'top 85%',
+      once: true
+    });
   }, []);
 
   // Set the body class directly so that CSS styling matches perfectly.
@@ -627,9 +697,8 @@ export default function App() {
           <ScrollQuote />
         </section>
 
-        {/* ============ PHILOSOPHY & FEATURES ============ */}
-        <HorizontalPhilosophy>
-          <section className="features">
+        {/* ============ FEATURES ============ */}
+        <section className="features">
             <div className="wrap">
             <div className="sec-head" data-reveal="">
               <span className="sec-eyebrow">The practice</span>
@@ -651,14 +720,14 @@ export default function App() {
                   <li>Saved to your archive</li>
                 </ul>
               </div>
-              <figure className="feature-art art-a" aria-hidden="true">
+              <TiltCard className="feature-art art-a" aria-hidden="true">
                 <div className="script-card">
                   <span className="sc-date">Tuesday · July 7</span>
                   <h4>Before the 9am you're dreading</h4>
                   <p>"You slept less than you wanted. Let's not pretend otherwise — let's work with it…"</p>
                   <div className="sc-lines"><i></i><i></i><i></i></div>
                 </div>
-              </figure>
+              </TiltCard>
             </div>
 
             <div className="feature-row" data-reveal="">
@@ -677,7 +746,7 @@ export default function App() {
                   <li>Live pacing</li>
                 </ul>
               </div>
-              <figure className="feature-art art-b">
+              <TiltCard className="feature-art art-b">
                 <div className="voice-viz" aria-hidden="true">
                   <b style={{ height: '34%', animationDelay: '0s' }}></b>
                   <b style={{ height: '58%', animationDelay: '.2s' }}></b>
@@ -692,7 +761,7 @@ export default function App() {
                   <b style={{ height: '42%', animationDelay: '2s' }}></b>
                 </div>
                 <figcaption>voice slowing to match your exhale</figcaption>
-              </figure>
+              </TiltCard>
             </div>
 
             <div className="feature-row" data-reveal="">
@@ -710,14 +779,14 @@ export default function App() {
                   <li>Commute mode</li>
                 </ul>
               </div>
-              <figure className="feature-art art-c" aria-hidden="true">
+              <TiltCard className="feature-art art-c" aria-hidden="true">
                 <div className="dial">
                   <span className="dial-chip c1">3 min reset</span>
                   <span className="dial-chip c2">30 min deep</span>
                   <span className="dial-chip c3">12 min walk</span>
                   <div className="dial-core"><strong>12</strong><span>minutes</span></div>
                 </div>
-              </figure>
+              </TiltCard>
             </div>
 
             <div className="feature-row" data-reveal="">
@@ -735,17 +804,16 @@ export default function App() {
                   <li>Morning recap</li>
                 </ul>
               </div>
-              <figure className="feature-art art-d" aria-hidden="true">
+              <TiltCard className="feature-art art-d" aria-hidden="true">
                 <div className="sleep-scene">
                   <div className="moon"></div>
                   <h4>The Orchard After Rain</h4>
                   <p>Tonight's wind-down · begins slowing at 10:40 pm</p>
                 </div>
-              </figure>
+              </TiltCard>
             </div>
           </div>
           </section>
-        </HorizontalPhilosophy>
 
         <HowItWorks />
 
@@ -891,7 +959,7 @@ export default function App() {
               
               <div className="foot-bottom-area">
                 <div className="foot-left-txt">
-                  © 2026 Built by <a href="#">BYO Studio</a> exclusively for Webflow
+                  © 2026 Built by <a href="#">Stillwave</a>
                 </div>
                 <div className="foot-logo">
                   Stillwave
