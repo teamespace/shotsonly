@@ -1,0 +1,6 @@
+{
+  "name": "Quorum AI Meeting Assistant",
+  "description": "Quorum is an AI meeting assistant that transcribes every call, files a clean summary in minutes, and extracts action items.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
