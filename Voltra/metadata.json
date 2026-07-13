@@ -1,0 +1,6 @@
+{
+  "name": "Voltra",
+  "description": "The AI fitness tracker that talks back. Smart widgets, recovery intelligence, and an AI coach.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
