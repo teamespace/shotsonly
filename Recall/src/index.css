@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Karla:ital,wght@0,400..800;1,400..800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-yellow: #FFD53D;
+  --color-yellow-soft: #FFF3C4;
+  --color-black: #191919;
+  --color-white: #FFFFFF;
+  --color-pink: #FF5C8A;
+  --color-pink-soft: #FFE1EA;
+  --color-mint: #4ECBA5;
+  --color-violet: #7C6CFF;
+  --color-paper: #FFFBEE;
+  
+  --font-display: "Baloo 2", "Comic Sans MS", cursive;
+  --font-body: "Karla", "Trebuchet MS", sans-serif;
+  
+  --shadow-brutal: 6px 6px 0 var(--color-black);
+  --shadow-brutal-sm: 4px 4px 0 var(--color-black);
+  --shadow-brutal-lg: 10px 10px 0 var(--color-black);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    @apply font-body bg-paper text-black antialiased leading-relaxed text-[1.05rem];
+    overflow-x: clip;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight leading-tight font-extrabold;
+  }
+}
+
+@layer utilities {
+  .brutal-border {
+    border: 3px solid var(--color-black);
+  }
+  .brutal-shadow {
+    box-shadow: var(--shadow-brutal);
+  }
+  .brutal-shadow-sm {
+    box-shadow: var(--shadow-brutal-sm);
+  }
+  .brutal-shadow-lg {
+    box-shadow: var(--shadow-brutal-lg);
+  }
+  
+  .perspective-1200 {
+    perspective: 1200px;
+  }
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+}
+
+/* Animations */
+@keyframes scroll {
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: scroll 26s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+/* Tape Decoration */
+.tape {
+  background: rgba(255, 92, 138, 0.75);
+  border: 2px dashed rgba(25, 25, 25, 0.4);
+}
