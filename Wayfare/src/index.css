@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sky: #F4F4F5;
+  --color-sky-deep: #E4E4E7;
+  --color-sunset: #09090B;
+  --color-sunset-deep: #27272A;
+  --color-ocean: #52525B;
+  --color-ocean-deep: #18181B;
+  --color-ink: #09090B;
+  --color-ink-dark: #000000;
+  --color-sand: #FFFFFF;
+  --color-sand-deep: #F4F4F5;
+  --color-gray-50: #FAFAFA;
+  --color-gray-100: #F4F4F5;
+  --color-accent: #2563EB;
+  --color-accent-deep: #1D4ED8;
+
+  --font-sans: "Inter", "Segoe UI", sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+
+  --radius-lg: 28px;
+  --radius-md: 18px;
+
+  --shadow-soft: 0 20px 40px -15px rgba(0,0,0,0.05);
+  --shadow-card: 0 10px 30px -10px rgba(0,0,0,0.08);
+  --shadow-float: 0 30px 60px -15px rgba(23,52,71,0.15);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-gray-50);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .bg-how {
+    background-image: url('/bg-how.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+
